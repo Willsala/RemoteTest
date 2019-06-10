@@ -1,0 +1,63 @@
+<TFO name = "tfo_demo" path = "E:/accu1/" comment = "1" author = "xy" date = "2018/04/08">
+	<LBF type = "LB0101">
+	<LIST>
+		<DUT name = "1" type = "LX200">
+		<TEST name = "accu1" path = "accu1"> 
+			<DWM name = "SelectMAP32"/>
+			<ITM name = "accu1"/>
+			<PIO name = "accu1"/>
+			<BIT name = "accu1"/>
+			<VCD name = "accu1"/>
+			<UCF name = "accu1"/>
+			<RPT name = "accu1"/>
+			<ATF name = "accu1"/>
+			<WAV name = "accu1" type = "" compare = "yes"/>
+		</TEST>
+		<TEST name = "accu2" path = "accu2"> 
+			<DWM name = "SelectMAP32"/>
+			<ITM name = "accu2"/>
+			<PIO name = "accu2"/>
+			<BIT name = "accu2"/>
+			<VCD name = "accu2"/>
+			<UCF name = "accu2"/>
+			<RPT name = "accu2"/>
+			<ATF name = "accu2"/>
+			<WAV name = "accu2" type = "" compare = "yes"/>
+		</TEST>
+		<TEST name = "Accushift" path = "Accushift"> 
+			<DWM name = "SelectMAP32"/>
+			<ITM name = "Accushift"/>
+			<PIO name = "Accushift"/>
+			<BIT name = "Accushift"/>
+			<VCD name = "Accushift"/>
+			<UCF name = "Accushift"/>
+			<RPT name = "Accushift"/>
+			<ATF name = "Accushift"/>
+			<WAV name = "Accushift" type = "" compare = "yes"/>
+		</TEST>
+		<TEST name = "Adder48bitTop" path = "Adder48bitTop"> 
+			<DWM name = "SelectMAP32"/>
+			<ITM name = "Adder48bitTop"/>
+			<PIO name = "Adder48bitTop"/>
+			<BIT name = "Adder48bitTop"/>
+			<VCD name = "Adder48bitTop"/>
+			<UCF name = "Adder48bitTop"/>
+			<RPT name = "Adder48bitTop"/>
+			<ATF name = "Adder48bitTop"/>
+			<WAV name = "Adder48bitTop" type = "" compare = "yes"/>
+		</TEST>
+		<TEST name = "BCIN" path = "BCIN"> 
+			<DWM name = "SelectMAP32"/>
+			<ITM name = "BCIN"/>
+			<PIO name = "BCIN"/>
+			<BIT name = "BCIN"/>
+			<VCD name = "BCIN"/>
+			<UCF name = "BCIN"/>
+			<RPT name = "BCIN"/>
+			<ATF name = "BCIN"/>
+			<WAV name = "BCIN" type = "" compare = "yes"/>
+		</TEST>
+		
+	</LIST>
+</TFO>
+			

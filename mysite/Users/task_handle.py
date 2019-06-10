@@ -111,7 +111,7 @@ def test_request(request):
 		user_in_queue_item.x = len(file_list_list)
 		user_in_queue_item.report_file=report_file
 		user_in_queue_item.save()
-		
+		report(report_file, 'Batch Test for ' + tfo_name)
 		for iter in file_list_list:
 			project_loc = iter[0]
 
@@ -127,7 +127,7 @@ def test_request(request):
 					return HttpResponse("no ptn file called " + input_ptn + " in " + project_loc +". Please check tfo file!")
 			addIndb(request,u_or_g,project_loc,user_or_group,ptn_name,report_file)
 		
-		report(report_file, 'Batch Test for ' + tfo_name)
+		
 			#msg = {"msg":"add test task successfully!","type":"s"}
 		
 
@@ -457,14 +457,14 @@ def check4waitingInfo():
 		wait_sec = sum(merge) * A_task_time
 		return "There are %d users in serving list, and %d users in queue.\n your tasks will get to platform in about %d seconds." % (serving_num,user_in_queue_num,wait_sec)
 		
-# for iter in user4serving.objects.all():
-	# iter.delete()
-# for iter in user_in_queue.objects.all():
-	# iter.delete()
-# for iter in task_db.objects.all():
-	# iter.delete()
-# for iter in Task.objects.all():
-	# iter.delete()
-# for iter in user4report.objects.all():
-	# iter.delete()
+for iter in user4serving.objects.all():
+	iter.delete()
+for iter in user_in_queue.objects.all():
+	iter.delete()
+for iter in task_db.objects.all():
+	iter.delete()
+for iter in Task.objects.all():
+	iter.delete()
+for iter in user4report.objects.all():
+	iter.delete()
 	

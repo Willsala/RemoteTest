@@ -4,7 +4,7 @@ class Users(models.Model):
 	username = models.CharField('username',max_length=20,primary_key=True, unique=True)
 	password = models.CharField('password',max_length=20)
 	authority = models.CharField('authority',max_length=20,default='common_user')
-	email = models.CharField('email',max_length=50,null=True)
+	email = models.CharField('email',max_length=300,null=True)
 	subscribe = models.BooleanField(default = False)
 	def __str__(self):
 		return '%s'%(self.username)
@@ -14,7 +14,7 @@ class Users(models.Model):
 
 class Group(models.Model):
 	group_id = models.AutoField('group_id',primary_key=True, unique=True)
-	group_name = models.CharField('group_name',max_length=50)
+	group_name = models.CharField('group_name',max_length=100)
 	
 	def __str__(self):
 		return '%s--%s' % (self.group_id,self.group_name)
@@ -33,12 +33,12 @@ class Task(models.Model):
 	user = models.ForeignKey(Users, on_delete=models.CASCADE,null=True)
 	group = models.ForeignKey(Group, on_delete=models.CASCADE,null=True)
 	user_or_group = models.CharField('user_or_group',max_length=1) # 0 for user, 1 for group
-	project_loc = models.CharField('project_loc',max_length=100)
+	project_loc = models.CharField('project_loc',max_length=300)
 	# authority = models.CharField('authority',max_length=20)
 	request_serial_num = models.IntegerField('request_serial_num',primary_key=True, unique=True)
 	# task_priority = models.IntegerField('task_priority')
-	ptn_name = models.CharField('ptn_file_name',max_length=30,default="mul5")
-	report_file = models.CharField('report_file',max_length=100,default="xxx")
+	ptn_name = models.CharField('ptn_file_name',max_length=100,default="mul5")
+	report_file = models.CharField('report_file',max_length=300,default="xxx")
 	end_tag = models.CharField('end_tag',max_length=10,default="not last")
 	def __str__(self):
 		return '%s'%(self.request_serial_num)
@@ -50,7 +50,7 @@ class Invitation(models.Model):
 	group_id = models.IntegerField('group_id')
 	inviter_name = models.CharField('username',max_length=20)
 	invitee_au = models.CharField('authority',max_length=1)
-	notes = models.CharField('notes',max_length=100)
+	notes = models.CharField('notes',max_length=1000)
 	
 	def __str__(self):
 		return '%s' % (self.group_id)
@@ -66,7 +66,7 @@ class au4group(models.Model):
 
 class au4pj(models.Model):
 	group = models.ForeignKey(Group, on_delete=models.CASCADE)
-	pj_name = models.CharField('project_name',max_length = 30)
+	pj_name = models.CharField('project_name',max_length = 300)
 	user = models.ForeignKey(Users, on_delete=models.CASCADE)
 	user_au4pj = models.CharField('user_authority4pj',max_length = 3)
 	tag = models.BooleanField('creator',default=False)
@@ -79,7 +79,7 @@ class user_in_queue(models.Model):
 	group = models.ForeignKey(Group, on_delete=models.CASCADE,null=True)
 	x = models.IntegerField('x')
 	serial = models.AutoField('serial',primary_key=True, unique=True)
-	report_file = models.CharField('report_file',max_length=100,default="xxx")
+	report_file = models.CharField('report_file',max_length=300,default="xxx")
 	s_time = models.DateTimeField('start_time',auto_now_add=True)
 	def __str__(self):
 		if self.user:
@@ -94,7 +94,7 @@ class user4serving(models.Model):
 	x = models.IntegerField('x')
 	x_current = models.IntegerField('x_current')
 	w = models.FloatField('w')
-	report_file = models.CharField('report_file',max_length=100,default="xxx")
+	report_file = models.CharField('report_file',max_length=300,default="xxx")
 	s_time = models.DateTimeField('start_time')
 	def __str__(self):
 		if self.user:
@@ -106,7 +106,7 @@ class user4serving(models.Model):
 class user4report(models.Model):
 	user = models.ForeignKey(Users, on_delete=models.CASCADE,null=True)
 	group = models.ForeignKey(Group, on_delete=models.CASCADE,null=True)
-	report_file = models.CharField('report_file2',max_length=100,default="xxx")
+	report_file = models.CharField('report_file2',max_length=300,default="xxx")
 	s_time = models.DateTimeField('start_time')
 	
 	def __str__(self):
@@ -120,12 +120,12 @@ class task_db(models.Model):
 	group = models.ForeignKey(Group, on_delete=models.CASCADE,null=True)
 	username = models.CharField('username',max_length=20)
 	user_or_group = models.CharField('user_or_group',max_length=1) # 0 for user, 1 for group
-	project_loc = models.CharField('project_loc',max_length=100)
+	project_loc = models.CharField('project_loc',max_length=300)
 	#authority = models.CharField('authority',max_length=20)
 	request_serial_num = models.IntegerField('request_serial_num')
 	#task_priority = models.IntegerField('task_priority',default=0)
-	ptn_name = models.CharField('ptn_file_name',max_length=30)
-	report_file = models.CharField('report_file',max_length=100,default="xxx")
+	ptn_name = models.CharField('ptn_file_name',max_length=100)
+	report_file = models.CharField('report_file',max_length=300,default="xxx")
 	def __str__(self):
 		return '%s-%s   %s'%(self.username,self.user_or_group,self.project_loc)
 	
@@ -134,8 +134,8 @@ class allTask4user(models.Model):
 	submit_time = models.DateTimeField('submit_time',auto_now_add=True)
 	finish_time = models.DateTimeField('finish_time', auto_now = True)
 	finish_tag = models.BooleanField('tag',default=False)
-	project_loc = models.CharField('project_loc',max_length=100)
-	ptn_name = models.CharField('ptn_file_name',max_length=30)
+	project_loc = models.CharField('project_loc',max_length=300)
+	ptn_name = models.CharField('ptn_file_name',max_length=100)
 	
 	def __str__(self):
 		return '%s - %.21s - %.21s'%(self.user.username,self.submit_time,self.finish_time)
@@ -146,8 +146,8 @@ class allTask4group(models.Model):
 	submit_time = models.DateTimeField('submit_time',auto_now_add=True)
 	finish_time = models.DateTimeField('finish_time', auto_now = True)
 	finish_tag = models.BooleanField('tag',default=False)
-	project_loc = models.CharField('project_loc',max_length=100)
-	ptn_name = models.CharField('ptn_file_name',max_length=30)
+	project_loc = models.CharField('project_loc',max_length=300)
+	ptn_name = models.CharField('ptn_file_name',max_length=100)
 	
 	def __str__(self):
 		return '%s - %s - %.21s'%(self.group.group_id,self.group.group_name,self.submit_time)
