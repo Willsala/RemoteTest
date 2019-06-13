@@ -8,6 +8,7 @@ django.setup()
 from Users.models import Users,Group,au4pj,user4report
 from Users.models import Task,allTask4user,allTask4group,task_db,user_in_queue,user4serving
 #from Users.patternGen import tfo_parser
+from django.db import transaction
 
 from django.http import HttpResponse,JsonResponse
 from django.shortcuts import redirect,render
@@ -185,20 +186,21 @@ def task_create(request,username,project_loc,user_or_group,ptn_name):
 
 	
 def addIndb(request,username,project_loc,user_or_group,ptn_name,report_file):
-	if user_or_group == '0':
-		user = Users.objects.get(username=username)
-		task_record = allTask4user(user=user,project_loc=project_loc,ptn_name=ptn_name)
-		task_record.save()
-		request_serial_num = user.task_db_set.count() + 1
-		task_db_item = task_db(user=user,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
-		task_db_item.save()
-	else:
-		group = Group.objects.get(group_id=int(username))
-		task_record = allTask4group(group=group,submitter=request.session.get('username'),project_loc=project_loc,ptn_name=ptn_name)
-		task_record.save()
-		request_serial_num = group.task_db_set.count() + 1
-		task_db_item = task_db(group=group,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
-		task_db_item.save()
+	with transaction.atomic():
+		if user_or_group == '0':
+			user = Users.objects.get(username=username)
+			task_record = allTask4user(user=user,project_loc=project_loc,ptn_name=ptn_name)
+			task_record.save()
+			request_serial_num = user.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
+			task_db_item = task_db(user=user,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
+			task_db_item.save()
+		else:
+			group = Group.objects.get(group_id=int(username))
+			task_record = allTask4group(group=group,submitter=request.session.get('username'),project_loc=project_loc,ptn_name=ptn_name)
+			task_record.save()
+			request_serial_num = group.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
+			task_db_item = task_db(group=group,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
+			task_db_item.save()
 	if task_db.objects.count() == 1:
 		pro = multiprocessing.Process(target = minute_process)
 		pro.start()
@@ -215,7 +217,8 @@ def minute_process():
 		if times % beta*4 == 0:
 			times = 0
 			weight_update()
-			
+	
+@transaction.atomic	
 def queue2serving():
 	alpha = 0.75
 	N = 5
@@ -231,6 +234,7 @@ def queue2serving():
 			else:
 				break
 
+@transaction.atomic	
 def task_db2task():
 	FIFO_length = 2
 	task_num = Task.objects.count()
@@ -274,6 +278,7 @@ def task_db2task():
 			else:
 				break
 
+@transaction.atomic	
 def choose_task():
 	serving_set = user4serving.objects.all()
 	rand = random.random()
@@ -293,7 +298,7 @@ def choose_task():
 		task_db_item = task_db.objects.filter(group=serving_item.group).order_by('request_serial_num')[0]
 	return task_db_item
 	
-	
+@transaction.atomic		
 def weight_update():
 	k = 1.3
 	alpha = 0.75
@@ -311,15 +316,17 @@ def priority_weigh(authority,request_serial_num):
 	request_weight = 1
 	task_priority = dict[authority]*authority_weight + request_serial_num*request_weight
 	return task_priority
-	
+
+@transaction.atomic		
 def del_task(task):
 	t = Task.objects.filter(request_serial_num=task.request_serial_num)
 	t.delete()
-	
+
+@transaction.atomic		
 def complete_task(task):
 	if task.user_or_group == "0":
 		user = Users.objects.get(username=task.username)
-		task_record = allTask4user.objects.filter(user=user,project_loc=task.project_loc,ptn_name=task.ptn_name,finish_tag=False).order_by('submit_time')[0]
+		task_record = allTask4user.objects.filter(user=user,project_loc=task.project_loc,ptn_name=task.ptn_name,finish_tag=False).order_by('submit_time').first()
 		task_record.finish_tag = True
 		task_record.save()
 	else:
@@ -328,7 +335,7 @@ def complete_task(task):
 		task_record.finish_tag = True
 		task_record.save()
 		
-	
+@transaction.atomic		
 def test(task):
 	
 	# tag = task.user_or_group
@@ -457,14 +464,12 @@ def check4waitingInfo():
 		wait_sec = sum(merge) * A_task_time
 		return "There are %d users in serving list, and %d users in queue.\n your tasks will get to platform in about %d seconds." % (serving_num,user_in_queue_num,wait_sec)
 		
-for iter in user4serving.objects.all():
-	iter.delete()
-for iter in user_in_queue.objects.all():
-	iter.delete()
-for iter in task_db.objects.all():
-	iter.delete()
-for iter in Task.objects.all():
-	iter.delete()
-for iter in user4report.objects.all():
-	iter.delete()
+
+user4serving.objects.all().delete()
+user_in_queue.objects.all().delete()
+task_db.objects.all().delete()
+Task.objects.all().delete()
+user4report.objects.all().delete()
+allTask4group.objects.all().delete()
+allTask4user.objects.all().delete()
 	
