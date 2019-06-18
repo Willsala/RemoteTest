@@ -381,13 +381,13 @@ def test(task):
 	path_in = os.path.join(path,input_ptn)
 	path_o = os.path.join(path,output_trf)
 	s_time = time.time()
-	#abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
-	print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
-	for i in range(2):
-		time.sleep(1)
-		print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
+	abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
+	# print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
+	# for i in range(2):
+		# time.sleep(1)
+		# print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
 	e_time = time.time()
-	#print(abc)
+	print(abc)
 
 	key = "Test time for " + task.ptn_name + ":"
 	value = e_time - s_time
@@ -487,12 +487,12 @@ def check4waitingInfo():
 		wait_sec = sum(merge) * A_task_time
 		return "There are %d users in serving list, and %d users in queue.\n your tasks will get to platform in about %d seconds." % (serving_num,user_in_queue_num,wait_sec)
 		
-# with transaction.atomic():
-	# user4serving.objects.all().delete()
-	# user_in_queue.objects.all().delete()
-	# task_db.objects.all().delete()
-	# Task.objects.all().delete()
-	# user4report.objects.all().delete()
-	# allTask4group.objects.all().delete()
-	# allTask4user.objects.all().delete()
+with transaction.atomic():
+	user4serving.objects.all().delete()
+	user_in_queue.objects.all().delete()
+	task_db.objects.all().delete()
+	Task.objects.all().delete()
+	user4report.objects.all().delete()
+	allTask4group.objects.all().delete()
+	allTask4user.objects.all().delete()
 	
