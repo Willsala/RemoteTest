@@ -111,7 +111,8 @@ def test_request(request):
 		#print(file_list_list)
 		user_in_queue_item.x = len(file_list_list)
 		user_in_queue_item.report_file=report_file
-		user_in_queue_item.save()
+		with transaction.atomic():
+			user_in_queue_item.save()
 		report(report_file, 'Batch Test for ' + tfo_name)
 		for iter in file_list_list:
 			project_loc = iter[0]
@@ -158,6 +159,7 @@ def test_request(request):
 #---------------------------------------
 	
 #----------非递归版--------------------- <<-----推荐使用
+
 def test_pack(task):
 	new_task = task
 	new_task_number = Task.objects.count()
@@ -181,25 +183,36 @@ def task_create(request,username,project_loc,user_or_group,ptn_name):
 		request_serial_num = 1
 	#task_priority = priority_weigh(authority,request_serial_num)
 	task = Task(username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name)
-	task.save()
+	with transaction.atomic():
+		task.save()
 	
 
 	
 def addIndb(request,username,project_loc,user_or_group,ptn_name,report_file):
-	with transaction.atomic():
-		if user_or_group == '0':
-			user = Users.objects.get(username=username)
-			task_record = allTask4user(user=user,project_loc=project_loc,ptn_name=ptn_name)
+	
+	if user_or_group == '0':
+		user = Users.objects.get(username=username)
+		task_record = allTask4user(user=user,project_loc=project_loc,ptn_name=ptn_name)
+		with transaction.atomic():
 			task_record.save()
+		if user.task_db_set.count()>0:
 			request_serial_num = user.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
-			task_db_item = task_db(user=user,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
-			task_db_item.save()
 		else:
-			group = Group.objects.get(group_id=int(username))
-			task_record = allTask4group(group=group,submitter=request.session.get('username'),project_loc=project_loc,ptn_name=ptn_name)
+			request_serial_num=1		
+		task_db_item = task_db(user=user,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
+		with transaction.atomic():	
+			task_db_item.save()
+	else:
+		group = Group.objects.get(group_id=int(username))
+		task_record = allTask4group(group=group,submitter=request.session.get('username'),project_loc=project_loc,ptn_name=ptn_name)
+		with transaction.atomic():	
 			task_record.save()
-			request_serial_num = group.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
-			task_db_item = task_db(group=group,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
+		if group.task_db_set.count()>0:
+			request_serial_num = user.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
+		else:
+			request_serial_num=1
+		task_db_item = task_db(group=group,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
+		with transaction.atomic():
 			task_db_item.save()
 	if task_db.objects.count() == 1:
 		pro = multiprocessing.Process(target = minute_process)
@@ -218,7 +231,7 @@ def minute_process():
 			times = 0
 			weight_update()
 	
-@transaction.atomic	
+#@transaction.atomic	
 def queue2serving():
 	alpha = 0.75
 	N = 5
@@ -229,43 +242,49 @@ def queue2serving():
 				queue_first = user_in_queue.objects.order_by('serial')[0]   #repeat
 				w = alpha ** queue_first.x
 				user4serving_item = user4serving(user=queue_first.user,group=queue_first.group,x=queue_first.x,x_current=queue_first.x,w=w,report_file=queue_first.report_file,s_time=queue_first.s_time)
-				user4serving_item.save()
-				queue_first.delete()
+				with transaction.atomic():
+					user4serving_item.save()
+					queue_first.delete()
 			else:
 				break
 
-@transaction.atomic	
+#@transaction.atomic	
 def task_db2task():
 	FIFO_length = 2
 	task_num = Task.objects.count()
 	if task_num < FIFO_length and task_db.objects.count() > 0:
 		for i in range(task_num,FIFO_length):
 			if task_db.objects.count() > 0 and user4serving.objects.count()>0:
+			
 				task_db_item = choose_task()
-				
+			
 				if task_db_item.user:
 					user4serving_item = user4serving.objects.filter(user=task_db_item.user)[0]
 				else:
 					user4serving_item = user4serving.objects.filter(group=task_db_item.group)[0]
-					
+				
 				if user4serving_item.x_current == 1:
 					#report(user4serving_item.report_file,'Total test time:', (datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC')) - user4serving_item.s_time).seconds)
 					user4report_item = user4report(user=user4serving_item.user,group=user4serving_item.group,s_time=user4serving_item.s_time)
-					user4report_item.save()
-					user4serving_item.delete()
+					with transaction.atomic():
+						user4report_item.save()
+						user4serving_item.delete()
 					end_tag = "last"
 				else:
 					user4serving_item.x_current -= 1
-					user4serving_item.save()
+					with transaction.atomic():
+						user4serving_item.save()
 					end_tag = "not last"
 				
 				if Task.objects.count() > 0:
 					request_serial_num = Task.objects.order_by('-request_serial_num')[0].request_serial_num + 1
 					task_item = Task(username=task_db_item.username,user=task_db_item.user,group=task_db_item.group,user_or_group=task_db_item.user_or_group,project_loc=task_db_item.project_loc,request_serial_num=request_serial_num,ptn_name=task_db_item.ptn_name,report_file=task_db_item.report_file,end_tag=end_tag)
-					task_item.save()
-				else:
+					with transaction.atomic():
+						task_item.save()
+				else:					
 					task_item = Task(username=task_db_item.username,user=task_db_item.user,group=task_db_item.group,user_or_group=task_db_item.user_or_group,project_loc=task_db_item.project_loc,request_serial_num=1,ptn_name=task_db_item.ptn_name,report_file=task_db_item.report_file,end_tag=end_tag)
-					task_item.save()
+					with transaction.atomic():
+						task_item.save()
 					#task = Task.objects.order_by('request_serial_num')[0]
 					pro = multiprocessing.Process(target = test_pack,args = (task_item,))
 					pro.start()
@@ -273,12 +292,12 @@ def task_db2task():
 				
 				# if user4serving.objects.count()>0:
 				
-					
-				task_db_item.delete()
+				with transaction.atomic():	
+					task_db_item.delete()
 			else:
 				break
 
-@transaction.atomic	
+
 def choose_task():
 	serving_set = user4serving.objects.all()
 	rand = random.random()
@@ -298,7 +317,7 @@ def choose_task():
 		task_db_item = task_db.objects.filter(group=serving_item.group).order_by('request_serial_num')[0]
 	return task_db_item
 	
-@transaction.atomic		
+	
 def weight_update():
 	k = 1.3
 	alpha = 0.75
@@ -307,7 +326,8 @@ def weight_update():
 		iter.w = iter.w * k
 		if iter.w > alpha:
 			iter.w = alpha
-		iter.save()
+		with transaction.atomic():
+			iter.save()
 
 
 def priority_weigh(authority,request_serial_num):
@@ -317,25 +337,28 @@ def priority_weigh(authority,request_serial_num):
 	task_priority = dict[authority]*authority_weight + request_serial_num*request_weight
 	return task_priority
 
-@transaction.atomic		
+	
 def del_task(task):
 	t = Task.objects.filter(request_serial_num=task.request_serial_num)
-	t.delete()
+	with transaction.atomic():
+		t.delete()
 
-@transaction.atomic		
+	
 def complete_task(task):
 	if task.user_or_group == "0":
 		user = Users.objects.get(username=task.username)
 		task_record = allTask4user.objects.filter(user=user,project_loc=task.project_loc,ptn_name=task.ptn_name,finish_tag=False).order_by('submit_time').first()
 		task_record.finish_tag = True
-		task_record.save()
+		with transaction.atomic():	
+			task_record.save()
 	else:
 		group = Group.objects.get(group_id=int(task.username))
 		task_record = allTask4group.objects.filter(group=group,project_loc=task.project_loc,ptn_name=task.ptn_name,finish_tag=False).order_by('submit_time')[0]
 		task_record.finish_tag = True
-		task_record.save()
+		with transaction.atomic():
+			task_record.save()
 		
-@transaction.atomic		
+	
 def test(task):
 	
 	# tag = task.user_or_group
@@ -358,13 +381,13 @@ def test(task):
 	path_in = os.path.join(path,input_ptn)
 	path_o = os.path.join(path,output_trf)
 	s_time = time.time()
-	abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
-	# print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
-	# for i in range(2):
-		# time.sleep(1)
-		# print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
+	#abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
+	print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
+	for i in range(2):
+		time.sleep(1)
+		print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
 	e_time = time.time()
-	print(abc)
+	#print(abc)
 
 	key = "Test time for " + task.ptn_name + ":"
 	value = e_time - s_time
@@ -375,8 +398,8 @@ def test(task):
 		else:
 			user4report_item = user4report.objects.filter(group=task.group)[0]
 		report(task.report_file,'Total test time:', (datetime.datetime.now() - user4report_item.s_time).total_seconds())
-		
-		user4report_item.delete()
+		with transaction.atomic():
+			user4report_item.delete()
 		
 	print("finish testing "+task.username+" "+ task.project_loc +".... ptn---"+ input_ptn +"....")
 	
@@ -464,12 +487,12 @@ def check4waitingInfo():
 		wait_sec = sum(merge) * A_task_time
 		return "There are %d users in serving list, and %d users in queue.\n your tasks will get to platform in about %d seconds." % (serving_num,user_in_queue_num,wait_sec)
 		
-
-user4serving.objects.all().delete()
-user_in_queue.objects.all().delete()
-task_db.objects.all().delete()
-Task.objects.all().delete()
-user4report.objects.all().delete()
-allTask4group.objects.all().delete()
-allTask4user.objects.all().delete()
+# with transaction.atomic():
+	# user4serving.objects.all().delete()
+	# user_in_queue.objects.all().delete()
+	# task_db.objects.all().delete()
+	# Task.objects.all().delete()
+	# user4report.objects.all().delete()
+	# allTask4group.objects.all().delete()
+	# allTask4user.objects.all().delete()
 	
