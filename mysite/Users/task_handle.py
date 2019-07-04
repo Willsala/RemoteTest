@@ -24,36 +24,7 @@ DONE = 2
 LOADING = 1
 UNDONE = 0
 
-# class TailRecurseException(BaseException):
-	# def __init__(self, args, kwargs):
-		# self.args = args
-		# self.kwargs = kwargs
 
-# def tail_call_optimized(g):
-	# """
-	# This function decorates a function with tail call
-	# optimization. It does this by throwing an exception
-	# if it is it's own grandparent, and catching such
-	# exceptions to fake the tail call optimization.
-
-	# This function fails if the decorated
-	# function recurses in a non-tail context.
-	# """
-	# @functools.wraps(g)
-	# def func(*args, **kwargs):
-		# f = sys._getframe()
-		# if f.f_back and f.f_back.f_back and f.f_back.f_back.f_code == f.f_code:
-			# raise TailRecurseException(args, kwargs)
-		# else:
-			# while 1:
-				# try:
-					# return g(*args, **kwargs)
-				# except TailRecurseException as e:
-					# args = e.args
-					# kwargs = e.kwargs
-				
-	# func.__doc__ = g.__doc__
-	# return func
 
 
 def test_request(request):
@@ -96,19 +67,11 @@ def test_request(request):
 			u_or_g = str(group_id)
 			path = os.path.join("Users","all_groups",str(group_id),project_loc)
 		
-		# dir_list = os.listdir(path)
-		# tfo_list = []
-		# for iter in dir_list:
-			# if iter.endswith('.tfo'):
-				# tfo_list.append(iter)
-		
-		# if len(tfo_list) != 1:
-			# return JsonResponse({"msg":"no tfo file or more than one tfo file in chosen location","type":"w"})
 		
 		file_list_list = tfo_parser(path,tfo_name)
 		report_file = os.path.splitext(os.path.join(path,tfo_name))[0] + '_report.log'
 
-		#print(file_list_list)
+		
 		user_in_queue_item.x = len(file_list_list)
 		user_in_queue_item.report_file=report_file
 		with transaction.atomic():
@@ -129,8 +92,7 @@ def test_request(request):
 					return HttpResponse("no ptn file called " + input_ptn + " in " + project_loc +". Please check tfo file!")
 			addIndb(request,u_or_g,project_loc,user_or_group,ptn_name,report_file)
 		
-		
-			#msg = {"msg":"add test task successfully!","type":"s"}
+					
 		
 
 
@@ -160,18 +122,33 @@ def test_request(request):
 	
 #----------非递归版--------------------- <<-----推荐使用
 
-def test_pack(task):
-	new_task = task
-	new_task_number = Task.objects.count()
-	while new_task_number:
-		test(new_task)
-		complete_task(new_task)		
-		del_task(new_task)
-		new_task_number = Task.objects.count()
-		if new_task_number:
-			new_task = Task.objects.order_by('request_serial_num')[0]
-	print("server has finished all the tasks!")	
+# def test_pack(task):
+	# new_task = task
+	# new_task_number = Task.objects.count()
+	# while new_task_number:
+		# test(new_task)
+		# #complete_task(new_task)		
+		# del_task(new_task)
+		# new_task_number = Task.objects.count()
+		# if new_task_number:
+			# new_task = Task.objects.order_by('request_serial_num')[0]
+	# print("server has finished all the tasks!")	
 
+def test_pack():
+	serving_or = False
+	while True:
+		new_task_number = Task.objects.count()
+		while new_task_number:
+			serving_or = True
+			new_task = Task.objects.order_by('request_serial_num')[0]
+			test(new_task)
+			#complete_task(new_task)		
+			del_task(new_task)
+			new_task_number = Task.objects.count()
+		if serving_or:
+			print("server has finished all the tasks!")
+			serving_or = False
+		time.sleep(0.1)
 #------------------------------------
 
 
@@ -214,22 +191,24 @@ def addIndb(request,username,project_loc,user_or_group,ptn_name,report_file):
 		task_db_item = task_db(group=group,username=username,project_loc=project_loc,request_serial_num=request_serial_num,user_or_group=user_or_group,ptn_name=ptn_name,report_file=report_file)
 		with transaction.atomic():
 			task_db_item.save()
-	if task_db.objects.count() == 1:
-		pro = multiprocessing.Process(target = minute_process)
-		pro.start()
+	# if task_db.objects.count() == 1:
+		# pro = multiprocessing.Process(target = minute_process)
+		# pro.start()
 		#pro.join()
 
 def minute_process():
 	times = 0
 	beta = 4
-	while(task_db.objects.count()>0):
-		time.sleep(1)
-		queue2serving()		
-		task_db2task()		             #
-		times = times + 1
-		if times % beta*4 == 0:
-			times = 0
-			weight_update()
+	while(True):
+		while(task_db.objects.count()>0):
+			time.sleep(1)
+			queue2serving()		
+			task_db2task()		             #
+			times = times + 1
+			if times % beta*4 == 0:
+				times = 0
+				weight_update()
+		time.sleep(0.1)
 	
 #@transaction.atomic	
 def queue2serving():
@@ -286,8 +265,8 @@ def task_db2task():
 					with transaction.atomic():
 						task_item.save()
 					#task = Task.objects.order_by('request_serial_num')[0]
-					pro = multiprocessing.Process(target = test_pack,args = (task_item,))
-					pro.start()
+					# pro = multiprocessing.Process(target = test_pack,args = (task_item,))
+					# pro.start()
 					#pro.join()
 				
 				# if user4serving.objects.count()>0:
@@ -360,14 +339,6 @@ def complete_task(task):
 		
 	
 def test(task):
-	
-	# tag = task.user_or_group
-	# if task.user_or_group == "0":	
-		# path = os.path.join("Users","all_users",task.username,task.project_loc)
-		# file_loc = os.path.join("Users","all_users")
-	# else:
-		# path = os.path.join("Users","all_groups",task.username,task.project_loc)
-		# file_loc = os.path.join("Users","all_groups")
 		
 	path = task.project_loc
 	dir_list = os.listdir(task.project_loc)
@@ -487,12 +458,17 @@ def check4waitingInfo():
 		wait_sec = sum(merge) * A_task_time
 		return "There are %d users in serving list, and %d users in queue.\n your tasks will get to platform in about %d seconds." % (serving_num,user_in_queue_num,wait_sec)
 		
-with transaction.atomic():
-	user4serving.objects.all().delete()
-	user_in_queue.objects.all().delete()
-	task_db.objects.all().delete()
-	Task.objects.all().delete()
-	user4report.objects.all().delete()
-	allTask4group.objects.all().delete()
-	allTask4user.objects.all().delete()
+# with transaction.atomic():
+	# user4serving.objects.all().delete()
+	# user_in_queue.objects.all().delete()
+	# task_db.objects.all().delete()
+	# Task.objects.all().delete()
+	# user4report.objects.all().delete()
+	# allTask4group.objects.all().delete()
+	# allTask4user.objects.all().delete()
+	
+# pro_1 = multiprocessing.Process(target = minute_process)
+# pro_1.start()
+# pro_2 = multiprocessing.Process(target = test_pack)
+# pro_2.start()
 	
