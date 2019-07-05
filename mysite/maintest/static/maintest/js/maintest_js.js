@@ -51,8 +51,6 @@ function generateFileTree(tv_data){
     data: tv_data,
     enableLinks: true,
 	onNodeSelected:function(event, data) {				
-		//var addon = document.getElementById("project4open").value.replace(/\/[^\/]*\/$/,"");
-		//var addon = document.getElementById("project4open").value;
 		var path = "";
 		var path4del="";
 		parentNode = $('#tree').treeview('getParent', data);
@@ -80,6 +78,14 @@ function generateFileTree(tv_data){
 		document.getElementById("dir_loc").value = path;
 		document.getElementById("loc4del").value = path4del;
 		document.getElementById("loc4down").value = path;
+	},
+	onNodeUnselected:function(event, data) {
+		
+		document.getElementById("file_name4down").value = "";
+		document.getElementById("file_loc").value = "/";
+		document.getElementById("dir_loc").value = "/";
+		document.getElementById("loc4del").value = "";
+		document.getElementById("loc4down").value = "/";
 	},
   });
   $('#tree').treeview('collapseAll', { silent: true });

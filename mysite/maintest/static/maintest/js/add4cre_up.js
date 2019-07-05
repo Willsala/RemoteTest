@@ -4,7 +4,7 @@ function getFilename(){
 	for(var i=0;i<files.length;i++){
 		if(filename==undefined||filename==""){
 		} else{
-			fn=files[i].name.substring(files[i].name.lastIndexOf("\\")+1);
+			fn=files[i]['webkitRelativePath'];
 			document.getElementById("filename").innerHTML+=fn+"<br>";
 			//document.getElementById("filename").innerHTML=filename+"<br>";		
 		}
@@ -40,6 +40,7 @@ function msg_show(message){
 		$('[data-dismiss="alert"]').alert('close');
 	},3000);
 	$("html,body").animate({"scrollTop":top});
+	loadTreeview(currentTVPath);
 }
 
 function user_submit_pack(obj){
@@ -56,6 +57,7 @@ function user_submit_pack4up(obj){
 	$("#myModal_1").modal('hide');
 	$("#myModal_2").modal('hide');
 	document.getElementById("filename").innerHTML = "";
+	
 	return false;
 }
 

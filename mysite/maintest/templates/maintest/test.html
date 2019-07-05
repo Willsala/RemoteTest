@@ -47,15 +47,11 @@ $(document).ready(function() {
 	$("#upload-btn").click(function() {
 		var fd = new FormData();
 		var file_loc = $("#file_loc").val();
-		//for (var i = 0; i < files.length; i++) {
-		//	fd.append("file", files[i]);
-		//	console.log(files[i]);
-		//}
-		fd.append("file",files[0]);
-		console.log(files[0]);
-		console.log("------");
-		console.log(files.length);
-		fd.append("file_loc",file_loc);
+		$("#myModal_2").modal('hide');
+		for (var i = 0; i < files.length; i++) {
+			fd.append("file", files[i]);
+			fd.append("paths", files[i]['webkitRelativePath']);
+		}
 		$.ajax({
 			url: "/Users/upload/",
 			async: true,
@@ -66,6 +62,7 @@ $(document).ready(function() {
 			cache: false,
 			success: function(data) {
 				msg_show(data);
+				loadTreeview(currentTVPath);
 			}
 		});
 	});

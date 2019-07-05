@@ -86,15 +86,19 @@ def upload(request):
 		print(file_loc)
 		for iter in file_loc:
 			path=os.path.join(path,iter)
-		files = request.POST.getlist("file")
-		print(type(files))
-		print(len(files))
-		#print(files[0:12])
-		#for file in files:
-			# with open(os.path.join(path,file.name),'wb') as fp:
-				# for chunk in file.chunks():
-					# fp.write(chunk)
-				# fp.close()
+		files = request.FILES.getlist("file")
+		file_paths = request.POST.getlist("paths")
+		i = 0
+		for file in files:
+			abs_path = os.path.join(path,os.sep.join(file_paths[i].split("/")))
+			basename= os.path.split(abs_path)[0]
+			if not os.path.exists(basename):
+				os.makedirs(basename)
+			with open(abs_path,'wb') as fp:
+				for chunk in file.chunks():
+					fp.write(chunk)
+				fp.close()
+			i = i + 1
 				#create_history(username,"upload file",file.name)
 		if len(files):
 			return JsonResponse({"msg":"Upload successfully!","type":"s"})
