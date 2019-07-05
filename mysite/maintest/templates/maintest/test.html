@@ -19,7 +19,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'maintest/WaveDrawJS/css/WaveDrawJS.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'maintest/css/maintest.css' %}">
 <script src="{% static 'maintest/WaveDrawJS/script/loadjson.js' %}"></script>
-<script src="{% static 'maintest/WaveDrawJS/script/miscscript.js' %}"></script>
+<!-- <script src="{% static 'maintest/WaveDrawJS/script/miscscript.js' %}"></script> -->
 <script>
     // define django template tag variables
     var build_url = "{% url 'maintest:build' %}";
@@ -33,30 +33,59 @@
 
 </script>
 <script>
-    var currentTVPath = '';  //delete when class MainTest available.
-
-    $(document).ready(function()
-    {
-		$('#file_input_pack').click(function(){
-			$('#file').click();
+var currentTVPath = ''; //delete when class MainTest available.
+var files = [];
+$(document).ready(function() {
+	$("#file").change(function() {
+		files = this.files;
+		console.log(this.files);
+		console.log(this.files.length);
+	});
+	$('#file_input_pack').click(function() {
+		$('#file').click();
+	});
+	$("#upload-btn").click(function() {
+		var fd = new FormData();
+		var file_loc = $("#file_loc").val();
+		//for (var i = 0; i < files.length; i++) {
+		//	fd.append("file", files[i]);
+		//	console.log(files[i]);
+		//}
+		fd.append("file",files[0]);
+		console.log(files[0]);
+		console.log("------");
+		console.log(files.length);
+		fd.append("file_loc",file_loc);
+		$.ajax({
+			url: "/Users/upload/",
+			async: true,
+			method: "POST",
+			data:fd,
+			contentType: false,
+			processData: false,
+			cache: false,
+			success: function(data) {
+				msg_show(data);
+			}
 		});
-      $("#typical-test").click(function()  //to delete
-      {
-        html = '<form>Location:<input type="text" id="t-p-path"></form>';
-        $("#s-p-body").html(html);
-      });
-      $("#submit-t-p-path").click(function() //submit path to be opened
-      {
-        currentTVPath = $('#t-p-path').val();
-        loadTreeview(currentTVPath);
-        $('#strat-project-modal').modal('hide')
-      });
-      $("#refresh_tree").click(function()  //refresh the file tree
-      {
-        loadTreeview(currentTVPath);
-      });
-    });
-	
+	});
+
+	$("#typical-test").click(function() //to delete
+	{
+		html = '<form>Location:<input type="text" id="t-p-path"></form>';
+		$("#s-p-body").html(html);
+	});
+	$("#submit-t-p-path").click(function() //submit path to be opened
+	{
+		currentTVPath = $('#t-p-path').val();
+		loadTreeview(currentTVPath);
+		$('#strat-project-modal').modal('hide')
+	});
+	$("#refresh_tree").click(function() //refresh the file tree
+	{
+		loadTreeview(currentTVPath);
+	});
+});   
 
 </script>
 <script>
@@ -145,7 +174,7 @@
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal_1">create dir</button>
 			<button type="button" class="btn btn-default" onclick="clear_files()" data-toggle="modal" data-target="#myModal_2">upload</button>
 			<button id="refresh_tree" type="button" class="btn btn-default">
-            refresh </span>
+            refresh 
 			</button>
 		  </div>
           
@@ -226,63 +255,8 @@
 </div>
 
 
-<div class="modal fade" id="myModal_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_1" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel_1">project information</h4>
-			</div>
-			<form id="form4create" action="/Users/mkdir/" method="post" onsubmit="return user_submit_pack(this);">
-			{% csrf_token %}
-				<div class="modal-body">
-					dir location: <input type="text" id="dir_loc" name="dir_loc" value="/" readonly="readonly"/>
-					dir name: <input type="text" id="dir_name" name="dir_name" maxlength="30" required oninvalid="setCustomValidity('group name can\'t be empty')" oninput="setCustomValidity('')"/>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-					<button type="submit" class="btn btn-primary" >create</button>
-				</div>
-			</form>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal -->
-</div>
 
-<div class="modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_2" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel_2">project information</h4>
-			</div>
-			<form id="form4upload"  action="/Users/upload/" method="post" enctype="multipart/form-data" onsubmit="return user_submit_pack4up(this);">
-			{% csrf_token %}
-				<div class="modal-body">
-					<div class="input-group">
-						<label class="input-group-addon">to location:</label>
-						<input type="file" name="myfile" multiple="multiple" id="file" onchange="getFilename()" style="display:none"/>
-						<input class="form-control col-md-4" type="text" id="file_loc" name="file_loc" value="/" readonly="readonly"/>
-						
-						<span class="input-group-btn"><button class="btn btn-default" type="button" id="file_input_pack" onclick="clear_files()">choose file</button></span>
-						
-					</div>
-					<br><br>
-					<div class="panel panel-info">
-						<div class="panel-heading">
-							<h3 class="panel-title">Selected files:</h3>
-						</div>
-						<div class="panel-body" id="filename">
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-					<button type="submit" class="btn btn-primary" >upload</button>
-				</div>
-			</form>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal -->
-</div>
+
 {% include "maintest/include/tools.html" %}
 <script>
    generateFileTree({{obj|safe}});

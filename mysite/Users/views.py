@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse,FileResponse
 from Users.models import Users,Invitation,Group
-
+from django.views.decorators.csrf import csrf_exempt
 import django.db 
 import time
 import os
@@ -76,24 +76,28 @@ def add_user(request):
 
 
 
-
+@csrf_exempt
 def upload(request):
 
 	username = request.session.get('username',None)
 	if username:
 		path = request.session.get('directory',os.path.join("Users","all_users",username))	
 		file_loc = request.POST.get('file_loc',"/").split("/")
+		print(file_loc)
 		for iter in file_loc:
 			path=os.path.join(path,iter)
-		files = request.FILES.getlist("myfile")
-		for file in files:
-			with open(os.path.join(path,file.name),'wb') as fp:
-				for chunk in file.chunks():
-					fp.write(chunk)
-				fp.close()
+		files = request.POST.getlist("file")
+		print(type(files))
+		print(len(files))
+		#print(files[0:12])
+		#for file in files:
+			# with open(os.path.join(path,file.name),'wb') as fp:
+				# for chunk in file.chunks():
+					# fp.write(chunk)
+				# fp.close()
 				#create_history(username,"upload file",file.name)
 		if len(files):
-			return JsonResponse({"msg":"Upload successfully! If file is too big, please wait some time and then refresh the page!","type":"s"})
+			return JsonResponse({"msg":"Upload successfully!","type":"s"})
 		return JsonResponse({"msg":"Please select files to upload!","type":"w"})
 	else:
 		return JsonResponse({"msg":"Your session has expired, please relogin first!","type":"w"})

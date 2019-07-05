@@ -27,15 +27,14 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="myModalLabel_2">project information</h4>
 			</div>
-			<form id="form4upload"  action="/Users/upload/" method="post" enctype="multipart/form-data" onsubmit="return user_submit_pack4up(this);">
-			{% csrf_token %}
+			<!-- <form id="form4upload"  action="/Users/upload/" method="post" enctype="multipart/form-data" onsubmit="return user_submit_pack4up(this);">
+			{% csrf_token %} -->
 				<div class="modal-body">
 					<div class="input-group">
 						<label class="input-group-addon">to location:</label>
-						<input type="file" name="myfile" multiple="multiple" id="file" onchange="getFilename()" style="display:none"/>
+						<input type="file" name="myfile" webkitdirectory multiple id="file" onchange="getFilename()" style="display:none" />
 						<input class="form-control col-md-4" type="text" id="file_loc" name="file_loc" value="/" readonly="readonly"/>
-						
-						<span class="input-group-btn"><button class="btn btn-default" type="button" id="file_input_pack" onclick="clear_files()">choose file</button></span>
+						<span class="input-group-btn"><button class="btn btn-default" type="button" id="file_input_pack" >choose file</button></span>
 						
 					</div>
 					<br><br>
@@ -49,9 +48,9 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-					<button type="submit" class="btn btn-primary" >upload</button>
+					<button type="button" id="upload-btn" class="btn btn-primary" >upload</button>
 				</div>
-			</form>
+			<!-- </form> -->
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal -->
 </div>

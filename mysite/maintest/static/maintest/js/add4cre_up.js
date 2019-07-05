@@ -17,25 +17,29 @@ function form_submit4reply(obj) {
 
 	$(form_id).ajaxSubmit(function(message) { 
 		//location.reload();
-		inner = "<div style=\"margin:0px\" class=\"alert ";
-		c_button = " alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"> &times; </button>";
-		if(message.type == "s"){
-			inner += "alert-success";
-		}else if(message.type == "i"){
-			inner += "alert-info";
-		}else if(message.type == "w"){
-			inner += "alert-warning";
-		}else{
-			inner += "alert-danger";
-		}
-		document.getElementById("message").innerHTML = inner + c_button + message.msg + "</div>";
-		window.setTimeout(function(){
-			$('[data-dismiss="alert"]').alert('close');
-		},3000);
-		$("html,body").animate({"scrollTop":top});
+		msg_show(message);
 	}); 
 	
 	return false; 
+}
+
+function msg_show(message){
+	var inner = "<div style=\"margin:0px\" class=\"alert ";
+	var c_button = " alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"> &times; </button>";
+	if(message.type == "s"){
+		inner += "alert-success";
+	}else if(message.type == "i"){
+		inner += "alert-info";
+	}else if(message.type == "w"){
+		inner += "alert-warning";
+	}else{
+		inner += "alert-danger";
+	}
+	document.getElementById("message").innerHTML = inner + c_button + message.msg + "</div>";
+	window.setTimeout(function(){
+		$('[data-dismiss="alert"]').alert('close');
+	},3000);
+	$("html,body").animate({"scrollTop":top});
 }
 
 function user_submit_pack(obj){
@@ -46,6 +50,8 @@ function user_submit_pack(obj){
 }
 
 function user_submit_pack4up(obj){
+	/* var files = obj.files;
+	var fd = new FormData; */
 	form_submit4reply(obj);
 	$("#myModal_1").modal('hide');
 	$("#myModal_2").modal('hide');
@@ -74,3 +80,4 @@ function del_file4user_pack(obj){
 function down_file_pack(){
 	$("#myModal_down").modal('hide');
 }
+
