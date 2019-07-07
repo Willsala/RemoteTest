@@ -35,6 +35,7 @@
 <script>
 var currentTVPath = ''; //delete when class MainTest available.
 var files = [];
+var upload_dir = true;
 $(document).ready(function() {
 	$("#file").change(function() {
 		files = this.files;
@@ -48,11 +49,42 @@ $(document).ready(function() {
 		var fd = new FormData();
 		var file_loc = $("#file_loc").val();
 		$("#myModal_2").modal('hide');
+		$("#progress").show();
+		var $progressBar = $("#progress-bar");
+
+		// Initialize the progress bar.
+		$progressBar.css({
+			"width": "0%"
+		});
 		for (var i = 0; i < files.length; i++) {
 			fd.append("file", files[i]);
-			fd.append("paths", files[i]['webkitRelativePath']);
+			if(upload_dir)
+				fd.append("paths", files[i]['webkitRelativePath']);
 		}
 		$.ajax({
+			xhr: function() {
+				var xhrobj = $.ajaxSettings.xhr();
+				if (xhrobj.upload) {
+					xhrobj.upload.addEventListener("progress",
+					function(event) {
+						var percent = 0;
+						var position = event.loaded || event.position;
+						var total = event.total;
+						if (event.lengthComputable) {
+							percent = Math.ceil(position / total * 100);
+						}
+
+						// Set the progress bar.
+						$progressBar.css({
+							"width": percent + "%"
+						});
+						$progressBar.text(percent + "%");
+					},
+					false)
+				}
+				return xhrobj;
+			},
+
 			url: "/Users/upload/",
 			async: true,
 			method: "POST",
@@ -62,6 +94,7 @@ $(document).ready(function() {
 			cache: false,
 			success: function(data) {
 				msg_show(data);
+				$("#progress").css('display','none');
 				loadTreeview(currentTVPath);
 			}
 		});
@@ -167,12 +200,29 @@ $(document).ready(function() {
                            inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
           <p>file tree</p>
           <div id="tree"></div>
+		  <fieldset id="progress" style="display: none">
+				<p>Files Progress</p>
+				<div class="progress">
+					<div id="progress-bar" class="progress-bar">0%</div>
+				</div>
+		  </fieldset>
           <div class="btn-group">
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal_1">create dir</button>
-			<button type="button" class="btn btn-default" onclick="clear_files()" data-toggle="modal" data-target="#myModal_2">upload</button>
+			<button type="button" class="btn btn-default dropdown-toggle" onclick="clear_files()" id="dropdownMenu4upload" data-toggle="dropdown">upload</button>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu4upload">
+				<li role="presentation">
+				  <a role="menuitem" tabindex="-1" data-toggle="modal" onclick="input_property4files()" href="#myModal_2">upload files</a>
+				</li>
+				<li role="presentation">
+				  <a role="menuitem" tabindex="-1" data-toggle="modal" onclick="input_property4dirs()" href="#myModal_2">upload dirs</a>
+				</li>
+			</ul>
 			<button id="refresh_tree" type="button" class="btn btn-default">
             refresh 
 			</button>
+		  </div>
+		  <div>
+			
 		  </div>
           
           <br><br>

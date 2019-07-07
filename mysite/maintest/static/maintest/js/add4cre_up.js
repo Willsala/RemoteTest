@@ -1,13 +1,13 @@
 function getFilename(){
-	var files=document.getElementById("file").files;
+	files=document.getElementById("file").files;
 	var fn="";
 	for(var i=0;i<files.length;i++){
-		if(filename==undefined||filename==""){
-		} else{
+		if(upload_dir){
 			fn=files[i]['webkitRelativePath'];
-			document.getElementById("filename").innerHTML+=fn+"<br>";
-			//document.getElementById("filename").innerHTML=filename+"<br>";		
+		}else{
+			fn=files[i].name;
 		}
+		document.getElementById("filename").innerHTML+=fn+"<br>";	
 	}
 }
 
@@ -83,3 +83,15 @@ function down_file_pack(){
 	$("#myModal_down").modal('hide');
 }
 
+function input_property4dirs(){
+	var str = '<input type="file" name="myfile" webkitdirectory="webkitdirectory" multiple id="file" onchange="getFilename()" style="display:none" />';
+	document.getElementById("insert_input").innerHTML = str;
+
+}
+
+function input_property4files(){
+	var str = '<input type="file" name="myfile" multiple id="file" onchange="getFilename()" style="display:none" />';
+	document.getElementById("insert_input").innerHTML = str;
+	
+	upload_dir = false;
+}

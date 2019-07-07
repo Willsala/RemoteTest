@@ -169,9 +169,9 @@ def addIndb(request,username,project_loc,user_or_group,ptn_name,report_file):
 	
 	if user_or_group == '0':
 		user = Users.objects.get(username=username)
-		task_record = allTask4user(user=user,project_loc=project_loc,ptn_name=ptn_name)
-		with transaction.atomic():
-			task_record.save()
+		# task_record = allTask4user(user=user,project_loc=project_loc,ptn_name=ptn_name)
+		# with transaction.atomic():
+			# task_record.save()
 		if user.task_db_set.count()>0:
 			request_serial_num = user.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
 		else:
@@ -181,9 +181,9 @@ def addIndb(request,username,project_loc,user_or_group,ptn_name,report_file):
 			task_db_item.save()
 	else:
 		group = Group.objects.get(group_id=int(username))
-		task_record = allTask4group(group=group,submitter=request.session.get('username'),project_loc=project_loc,ptn_name=ptn_name)
-		with transaction.atomic():	
-			task_record.save()
+		# task_record = allTask4group(group=group,submitter=request.session.get('username'),project_loc=project_loc,ptn_name=ptn_name)
+		# with transaction.atomic():	
+			# task_record.save()
 		if group.task_db_set.count()>0:
 			request_serial_num = user.task_db_set.order_by('-request_serial_num')[0].request_serial_num + 1
 		else:
