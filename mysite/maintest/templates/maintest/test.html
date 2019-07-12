@@ -48,6 +48,7 @@ $(document).ready(function() {
 	$("#upload-btn").click(function() {
 		var fd = new FormData();
 		var file_loc = $("#file_loc").val();
+		fd.append("file_loc",file_loc);
 		$("#myModal_2").modal('hide');
 		$("#progress").show();
 		var $progressBar = $("#progress-bar");
