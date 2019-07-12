@@ -82,9 +82,17 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # 'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+	'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'usrdb',
+        'HOST': '127.0.0.1',
+        'PORT': 3306,
+        'USER': 'root',
+        'PASSWORD': 'ljf123',
     }
 }
 
@@ -152,3 +160,5 @@ SESSION_COOKIE_AGE = 3000
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 DATETIME_FORMAT = 'Y-m-d H:i:s'
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
