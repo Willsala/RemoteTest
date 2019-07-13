@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.core.files.storage import DefaultStorage, default_storage, FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.core.files.storage import DefaultStorage, default_storage, FileSystemStorage
@@ -137,8 +137,28 @@ def check(request):
 	print('tfo_name =', request.session['tfo_name'])
 	# tfo_file = 'tfo_demo.tfo'
 	# TODO: Check file integrity and syntax.
+	if(not request.session['tfo_name'].endswith(".tfo")):
+		return JsonResponse({"msg":"please choose a tfo file!","type":"w"})
+	file_list_list = tfo_parser(request.session['tfo_path'],request.session['tfo_name'])
+	for iter in file_list_list:
+		project_loc = iter[0]
+		ptn_name = iter[1][0]
+		if os.path.isdir(project_loc):
+			dir_list = os.listdir(project_loc)
+			input_ptn = ptn_name + ".ptn"
+			if input_ptn not in dir_list:
+				msg = "no ptn file called " + input_ptn + " in " + project_loc +". Please check tfo file!"
+				type = "w"
+				equest.session['stream_status'][0][1] = UNDONE
+				return JsonResponse({"msg":msg,"type":type})
+		else:
+			msg = "There is no directory called "+ project_loc.split(os.path.join("all_users",request.session.get("username","None")))+"!!!"
+			type = "d"
+			equest.session['stream_status'][0][1] = UNDONE
+			return JsonResponse({"msg":msg,"type":type})
+			
 	request.session['stream_status'][0][1] = DONE  # Check status
-	return HttpResponse('check success')
+	return JsonResponse({"msg":"check pass","type":"s"})
 
 
 def build(request):

@@ -80,11 +80,16 @@ def add_user(request):
 def upload(request):
 
 	username = request.session.get('username',None)
+	data = {}
+	flag = ""
 	if username:
 		path = request.session.get('directory',os.path.join("Users","all_users",username))	
-		file_loc = request.POST.get('file_loc',"/").split("/")
-		print(file_loc)
-		for iter in file_loc:
+		file_loc = request.POST.get('file_loc',"/")
+		file_loc_splited= file_loc.split("/")
+		index = request.POST.get('index',"0")
+		total = request.POST.get('total',"unknown")
+		#print(file_loc)
+		for iter in file_loc_splited:
 			path=os.path.join(path,iter)
 		files = request.FILES.getlist("file")
 		file_paths = request.POST.getlist("paths")
@@ -107,8 +112,18 @@ def upload(request):
 					for chunk in file.chunks():
 						fp.write(chunk)
 					fp.close()
-		if len(files):
-			return JsonResponse({"msg":"Upload successfully!","type":"s"})
+		if len(files): 
+			data["msg"] = str(index)+ "/" + str(total)+ " upload successfully!"
+			data["total"] = total
+			data["index"] = index
+			data["file_loc"] = file_loc
+			if index == total:
+				data["type"] = "s"
+			else:
+				data["type"] = "i"
+				data["flag"] = "ing"
+				data["msg"] = data["msg"] + "  Please wait!"
+			return JsonResponse(data)
 		return JsonResponse({"msg":"Please select files to upload!","type":"w"})
 	else:
 		return JsonResponse({"msg":"Your session has expired, please relogin first!","type":"w"})

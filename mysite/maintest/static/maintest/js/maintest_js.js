@@ -159,9 +159,13 @@ function callFlowFunc(path){
         tfo: selected_tfo
       },
       success: function(data){
-        alert(data);
-//        alert('hello')
+		if(data.type == "s"){
+			alert(data.msg);
+		}else{
+			msg_show(data);
+		}		
         location.reload();
+		
       }
     });
 }
@@ -200,7 +204,7 @@ function runTest(path){
       success: function(data){
         alert(data);
         // document.getElementById("waveform").src = waveform_path;
-        console.log("change img src")
+        console.log("change img src");
         location.reload();
       }
     });
