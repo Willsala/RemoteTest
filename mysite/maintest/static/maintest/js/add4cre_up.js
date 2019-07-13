@@ -151,7 +151,7 @@ function upload_ajax(fd){
 						fd.append("paths", files[i]['webkitRelativePath']);			
 				}
 				upload_ajax(fd);
-				document.getElementById("filename").innerHTML = Math.ceil(max/step)+"/"+Math.ceil(total/step);
+				document.getElementById("file_progress").innerHTML = Math.ceil(max/step)+"/"+Math.ceil(total/step);
 			}else{
 				loadTreeview(currentTVPath);
 				$("#progress").css('display','none');

@@ -69,7 +69,7 @@ $(document).ready(function() {
 				fd.append("paths", files[i]['webkitRelativePath']);			
 		}
 		upload_ajax(fd);
-		document.getElementById("filename").innerHTML = Math.ceil(1)+"/"+Math.ceil(file.length/step);
+		document.getElementById("file_progress").innerHTML = Math.ceil(1)+"/"+Math.ceil(file.length/step);
 		//
 	});
 
