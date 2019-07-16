@@ -63,13 +63,14 @@ $(document).ready(function() {
 		fd.append("file_loc",file_loc);		
 		fd.append("total",files.length);
 		fd.append("index",max);
+		fd.append("upload_time",new Date());
 		for (var i = 0; i < max; i++) {
 			fd.append("file", files[i]);
 			if(upload_dir)
 				fd.append("paths", files[i]['webkitRelativePath']);			
 		}
 		upload_ajax(fd);
-		document.getElementById("file_progress").innerHTML = Math.ceil(1)+"/"+Math.ceil(file.length/step);
+		document.getElementById("file_progress").innerHTML = Math.ceil(1)+"/"+Math.ceil(files.length/step);
 		//
 	});
 

@@ -149,10 +149,10 @@ def check(request):
 			if input_ptn not in dir_list:
 				msg = "no ptn file called " + input_ptn + " in " + project_loc +". Please check tfo file!"
 				type = "w"
-				equest.session['stream_status'][0][1] = UNDONE
+				request.session['stream_status'][0][1] = UNDONE
 				return JsonResponse({"msg":msg,"type":type})
 		else:
-			msg = "There is no directory called "+ project_loc.split(os.path.join("all_users",request.session.get("username","None")))+"!!!"
+			msg = "There is no directory called "+ project_loc.split(os.path.join("all_users",request.session.get("username","None")))[1]+"!!!"
 			type = "d"
 			equest.session['stream_status'][0][1] = UNDONE
 			return JsonResponse({"msg":msg,"type":type})

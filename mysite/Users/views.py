@@ -7,6 +7,7 @@ import time
 import os
 import shutil
 import zipfile
+from datetime import datetime
 #def index(request):
     #return HttpResponse("Hello, world. You're at the polls index.")
 # Create your views here.
@@ -82,12 +83,19 @@ def upload(request):
 	username = request.session.get('username',None)
 	data = {}
 	flag = ""
+	
+	GMT_FORMAT = '%a %b %d %Y %H:%M:%S GMT+0800 '
 	if username:
 		path = request.session.get('directory',os.path.join("Users","all_users",username))	
 		file_loc = request.POST.get('file_loc',"/")
 		file_loc_splited= file_loc.split("/")
 		index = request.POST.get('index',"0")
 		total = request.POST.get('total',"unknown")
+		upload_time = request.POST.get('upload_time').split('(')[0]
+		print(upload_time)
+		print(type(upload_time))
+		dat = datetime.strptime(upload_time,GMT_FORMAT)
+		a = datetime.now()
 		#print(file_loc)
 		for iter in file_loc_splited:
 			path=os.path.join(path,iter)
@@ -112,6 +120,9 @@ def upload(request):
 					for chunk in file.chunks():
 						fp.write(chunk)
 					fp.close()
+		
+		print((datetime.now()-dat).seconds)
+		print("write time:" + str((datetime.now()-a).seconds))
 		if len(files): 
 			data["msg"] = str(index)+ "/" + str(total)+ " upload successfully!"
 			data["total"] = total
@@ -122,7 +133,7 @@ def upload(request):
 			else:
 				data["type"] = "i"
 				data["flag"] = "ing"
-				data["msg"] = data["msg"] + "  Please wait!"
+				data["msg"] = data["msg"] + "  Please wait!  " +"It took "+ str((datetime.now()-dat).seconds) + " seconds."
 			return JsonResponse(data)
 		return JsonResponse({"msg":"Please select files to upload!","type":"w"})
 	else:

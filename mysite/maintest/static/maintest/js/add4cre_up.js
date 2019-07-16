@@ -90,7 +90,7 @@ function down_file_pack(){
 function input_property4dirs(){
 	var str = '<input type="file" name="myfile" webkitdirectory="webkitdirectory" multiple id="file" onchange="getFilename()" style="display:none" />';
 	document.getElementById("insert_input").innerHTML = str;
-
+	upload_dir = true;
 }
 
 function input_property4files(){
@@ -135,6 +135,7 @@ function upload_ajax(fd){
 		processData: false,
 		cache: false,
 		success: function(data) {
+			fd = new FormData();
 			msg_show(data);
 			if(data.flag == "ing"){
 				var step = 100;
@@ -150,6 +151,7 @@ function upload_ajax(fd){
 					if(upload_dir)
 						fd.append("paths", files[i]['webkitRelativePath']);			
 				}
+				fd.append("upload_time",new Date());
 				upload_ajax(fd);
 				document.getElementById("file_progress").innerHTML = Math.ceil(max/step)+"/"+Math.ceil(total/step);
 			}else{
