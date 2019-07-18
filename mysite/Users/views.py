@@ -75,7 +75,15 @@ def add_user(request):
 	return HttpResponse(html_add_user_str)
 
 
-
+@csrf_exempt
+def before_upload(request):
+	username = request.session.get('username',None)
+	if username:
+		file_loc = request.POST.get("file_loc")
+		request.session['file_loc'] = file_loc
+		return HttpResponse("whatever")
+	else:
+		return JsonResponse({"msg":"Your session has expired, please relogin first!","type":"w"})
 
 @csrf_exempt
 def upload(request):
@@ -101,25 +109,25 @@ def upload(request):
 			path=os.path.join(path,iter)
 		files = request.FILES.getlist("file")
 		file_paths = request.POST.getlist("paths")
-		if len(file_paths):
-			i = 0
-			for file in files:
-				abs_path = os.path.join(path,os.sep.join(file_paths[i].split("/")))
-				basename= os.path.split(abs_path)[0]
-				if not os.path.exists(basename):
-					os.makedirs(basename)
-				with open(abs_path,'wb') as fp:
-					for chunk in file.chunks():
-						fp.write(chunk)
-					fp.close()
-				i = i + 1
-		else:
-			for file in files:
-				abs_path = os.path.join(path,file.name)
-				with open(abs_path,'wb') as fp:
-					for chunk in file.chunks():
-						fp.write(chunk)
-					fp.close()
+		# if len(file_paths):
+			# i = 0
+			# for file in files:
+				# abs_path = os.path.join(path,os.sep.join(file_paths[i].split("/")))
+				# basename= os.path.split(abs_path)[0]
+				# if not os.path.exists(basename):
+					# os.makedirs(basename)
+				# with open(abs_path,'wb') as fp:
+					# for chunk in file.chunks():
+						# fp.write(chunk)
+					# fp.close()
+				# i = i + 1
+		# else:
+			# for file in files:
+				# abs_path = os.path.join(path,file.name)
+				# with open(abs_path,'wb') as fp:
+					# for chunk in file.chunks():
+						# fp.write(chunk)
+					# fp.close()
 		
 		print((datetime.now()-dat).seconds)
 		with open("uploadlog.txt","a") as fp:

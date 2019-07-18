@@ -141,7 +141,15 @@ FILEBROWSER_EXTENSIONS = {
     'Test': ['.vcd','.bit','wlf']
 }
 
+# changes for uploading files
+# FILE_UPLOAD_PERMISSIONS = 0o644
 
+FILE_UPLOAD_HANDLERS = [
+    #'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+FILE_UPLOAD_TEMP_DIR = os.path.join("D:\\","TEMP")
 
 MEDIA_URL = '/media/'
 

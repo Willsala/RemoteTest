@@ -165,3 +165,21 @@ function upload_ajax(fd){
 function sleep(ms, callback) {
 	setTimeout(callback, ms);
 }
+
+function before_upload(){
+	var file_loc = $("#file_loc").val();
+	clear_files();
+	$.ajax({
+		url:"/Users/before_upload/",
+		async: true,
+		method: "POST",
+		data:{
+			file_loc:file_loc
+		},
+		success: function(data) {
+			if(data.type == 'w'){
+				alert(data.msg);
+			}
+		}
+	});
+}
