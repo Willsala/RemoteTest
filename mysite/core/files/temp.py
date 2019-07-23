@@ -24,7 +24,7 @@ from django.core.files.utils import FileProxyMixin
 __all__ = ('NamedTemporaryFile', 'gettempdir',)
 
 
-if os.name == 'nt' or os.name == 'piosx':
+if os.name == 'nt' or os.name == 'posix':
     class TemporaryFile(FileProxyMixin):
         """
         Temporary file object constructor that supports reopening of the
