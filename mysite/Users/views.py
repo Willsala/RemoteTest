@@ -7,6 +7,7 @@ import time
 import os
 import shutil
 import zipfile
+from datetime import datetime
 #def index(request):
     #return HttpResponse("Hello, world. You're at the polls index.")
 # Create your views here.
@@ -74,41 +75,76 @@ def add_user(request):
 	return HttpResponse(html_add_user_str)
 
 
-
+@csrf_exempt
+def before_upload(request):
+	username = request.session.get('username',None)
+	if username:
+		file_loc = request.POST.get("file_loc")
+		request.session['file_loc'] = file_loc
+		return HttpResponse("whatever")
+	else:
+		return JsonResponse({"msg":"Your session has expired, please relogin first!","type":"w"})
 
 @csrf_exempt
 def upload(request):
 
 	username = request.session.get('username',None)
+	data = {}
+	flag = ""
+	
+	GMT_FORMAT = '%a %b %d %Y %H:%M:%S GMT+0800 '
 	if username:
 		path = request.session.get('directory',os.path.join("Users","all_users",username))	
-		file_loc = request.POST.get('file_loc',"/").split("/")
-		print(file_loc)
-		for iter in file_loc:
+		file_loc = request.POST.get('file_loc',"/")
+		file_loc_splited= file_loc.split("/")
+		index = request.POST.get('index',"0")
+		total = request.POST.get('total',"unknown")
+		upload_time = request.POST.get('upload_time').split('(')[0]
+		print(upload_time)
+		print(type(upload_time))
+		dat = datetime.strptime(upload_time,GMT_FORMAT)
+		a = datetime.now()
+		#print(file_loc)
+		for iter in file_loc_splited:
 			path=os.path.join(path,iter)
 		files = request.FILES.getlist("file")
 		file_paths = request.POST.getlist("paths")
-		if len(file_paths):
-			i = 0
-			for file in files:
-				abs_path = os.path.join(path,os.sep.join(file_paths[i].split("/")))
-				basename= os.path.split(abs_path)[0]
-				if not os.path.exists(basename):
-					os.makedirs(basename)
-				with open(abs_path,'wb') as fp:
-					for chunk in file.chunks():
-						fp.write(chunk)
-					fp.close()
-				i = i + 1
-		else:
-			for file in files:
-				abs_path = os.path.join(path,file.name)
-				with open(abs_path,'wb') as fp:
-					for chunk in file.chunks():
-						fp.write(chunk)
-					fp.close()
-		if len(files):
-			return JsonResponse({"msg":"Upload successfully!","type":"s"})
+		# if len(file_paths):
+			# i = 0
+			# for file in files:
+				# abs_path = os.path.join(path,os.sep.join(file_paths[i].split("/")))
+				# basename= os.path.split(abs_path)[0]
+				# if not os.path.exists(basename):
+					# os.makedirs(basename)
+				# with open(abs_path,'wb') as fp:
+					# for chunk in file.chunks():
+						# fp.write(chunk)
+					# fp.close()
+				# i = i + 1
+		# else:
+			# for file in files:
+				# abs_path = os.path.join(path,file.name)
+				# with open(abs_path,'wb') as fp:
+					# for chunk in file.chunks():
+						# fp.write(chunk)
+					# fp.close()
+		
+		print((datetime.now()-dat).seconds)
+		with open("uploadlog.txt","a") as fp:
+			fp.write(str(index)+ "/" + str(total)+ "  " +str((datetime.now()-dat).seconds)+" write time:" + str((datetime.now()-a).seconds) +"\n")
+		print("write time:" + str((datetime.now()-a).seconds))
+		if len(files): 
+			data["msg"] = str(index)+ "/" + str(total)+ " upload successfully!"
+			data["total"] = total
+			data["index"] = index
+			data["file_loc"] = file_loc
+			if index == total:
+				data["type"] = "s"
+			else:
+				data["type"] = "i"
+				data["flag"] = "ing"
+				data["msg"] = data["msg"] + "  Please wait!  " +"It took "+ str((datetime.now()-dat).seconds) + " seconds."
+			return JsonResponse(data)
 		return JsonResponse({"msg":"Please select files to upload!","type":"w"})
 	else:
 		return JsonResponse({"msg":"Your session has expired, please relogin first!","type":"w"})

@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^add_user/',views.add_user,name='add_user'),
     #url(r'^check/',views.check,name='check'),
     url(r'^identify/',views.identify,name='identify'),
+	url(r'^before_upload/',views.before_upload,name="before_upload"),
     url(r'^upload/',views.upload,name='upload'),
     url(r'^mkdir/',views.mkdir,name='mkdir'),
     url(r'^logout/',views.logout,name='logout'),
