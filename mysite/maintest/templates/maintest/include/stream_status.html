@@ -26,6 +26,12 @@
         </tr>
       {% endif %}
     {% endif %}
+	{% if action.0 == "Test" and action.1 == 1 %}
+		<tr class="progress progress-striped">
+			<td colspan="2"  ><div id="progress-action" class="progress-bar">0%</div></td>
+			<!-- <td><div id="progress-action" class="progress-bar">0%</div></td> -->
+		</tr>
+	{% endif %}
   {% endfor %}
   </tbody>
 </table>

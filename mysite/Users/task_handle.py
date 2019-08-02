@@ -20,6 +20,8 @@ import functools
 import bs4
 import random
 
+from .trf_compare import trf_compare
+
 DONE = 2
 LOADING = 1
 UNDONE = 0
@@ -53,9 +55,9 @@ def test_request(request):
 			u_or_g = username
 			path = os.path.join("Users","all_users",username,project_loc)
 			user_in_queue_item = user_in_queue(user=user,x=1)
-			request.session['stream_status'][2][1] = DONE
+			request.session['stream_status'][2][1] = LOADING
 		else:
-			request.session['stream_status4group'][2][1] = DONE
+			request.session['stream_status4group'][2][1] = LOADING
 			group = Group.objects.get(group_id=group_id)
 			if au == "3" or au == "4":				
 				#user = Users.objects.get(username=username)
@@ -352,14 +354,16 @@ def test(task):
 	path_in = os.path.join(path,input_ptn)
 	path_o = os.path.join(path,output_trf)
 	s_time = time.time()
-	abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
-	# print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
-	# for i in range(2):
-		# time.sleep(1)
-		# print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
+	#abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
+	print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
+	for i in range(4):
+		time.sleep(1)
+		print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
 	e_time = time.time()
-	print(abc)
-
+	#print(abc)
+	#------compare two trf----------
+	#trf_compare(path_o+"_ori",path_o)
+	
 	key = "Test time for " + task.ptn_name + ":"
 	value = e_time - s_time
 	report(task.report_file, key, value)

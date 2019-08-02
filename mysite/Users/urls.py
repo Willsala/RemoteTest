@@ -30,6 +30,7 @@ urlpatterns = [
 	url(r'^email/',info.email,name="email"),
 	url(r'^history/',info.history,name="history"),
 	url(r'^log/',views.log,name="log"),
+	
 	url(r'^test_request/',task_handle.test_request,name="test_request"),
 	
 	#--------------------group-------------------

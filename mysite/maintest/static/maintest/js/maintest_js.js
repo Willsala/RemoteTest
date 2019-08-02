@@ -162,10 +162,20 @@ function callFlowFunc(path){
 		if(data.type == "s"){
 			alert(data.msg);
 		}else{
-			msg_show(data);
+			msg_show(data,10);
 		}		
-        location.reload();
-		
+		status_get();
+      }
+    });
+}
+
+function status_get(){
+  var url = "/maintest/stream_status/"
+  $.ajax({
+    url: url,
+      async: true,
+      success: function(data){		
+        $("#stream_status").html(data);
       }
     });
 }
@@ -205,7 +215,8 @@ function runTest(path){
         alert(data);
         // document.getElementById("waveform").src = waveform_path;
         console.log("change img src");
-        location.reload();
+		status_get();
+        testProgressQuery();
       }
     });
 }
@@ -234,4 +245,24 @@ function genTestReport(path){
 
 function editText(path){
     console.log(' enter editText');
+}
+
+function testProgressQuery(){
+	var url = "/maintest/testProgressQuery/";
+	var $progressBar = $("#progress-action");
+	$.ajax({
+		url:url,
+		async: true,
+		success: function(data) {
+			$progressBar.css({
+				"width": data.percent + "%"
+			});
+			$progressBar.text(data.percent + "%");
+			if(data.percent >= 100){
+				status_get();
+			}else{
+				testProgressQuery();
+			}
+		}
+	});
 }

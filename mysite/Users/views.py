@@ -132,6 +132,7 @@ def upload(request):
 		print((datetime.now()-dat).seconds)
 		with open("uploadlog.txt","a") as fp:
 			fp.write(str(index)+ "/" + str(total)+ "  " +str((datetime.now()-dat).seconds)+" write time:" + str((datetime.now()-a).seconds) +"\n")
+			fp.close()
 		print("write time:" + str((datetime.now()-a).seconds))
 		if len(files): 
 			data["msg"] = str(index)+ "/" + str(total)+ " upload successfully!"
