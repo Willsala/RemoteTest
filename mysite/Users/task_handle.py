@@ -354,13 +354,13 @@ def test(task):
 	path_in = os.path.join(path,input_ptn)
 	path_o = os.path.join(path,output_trf)
 	s_time = time.time()
-	#abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
-	print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
-	for i in range(4):
-		time.sleep(1)
-		print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
+	abc = os.popen("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1").read()
+	# print("sudo /home/linaro/BR0101/z7_v4_com/z7_v4_ip_app " + path_in + " " + path_o + " 1 1 1")
+	# for i in range(4):
+		# time.sleep(1)
+		# print("testing "+task.username+" "+ task.project_loc + input_ptn + ".....")
 	e_time = time.time()
-	#print(abc)
+	print(abc)
 	#------compare two trf----------
 	#trf_compare(path_o+"_ori",path_o)
 	
