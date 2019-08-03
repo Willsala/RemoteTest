@@ -1,3 +1,4 @@
+
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse,FileResponse
 from Users.models import Users,Invitation,Group
@@ -132,6 +133,7 @@ def upload(request):
 		print((datetime.now()-dat).seconds)
 		with open("uploadlog.txt","a") as fp:
 			fp.write(str(index)+ "/" + str(total)+ "  " +str((datetime.now()-dat).seconds)+" write time:" + str((datetime.now()-a).seconds) +"\n")
+			fp.close()
 		print("write time:" + str((datetime.now()-a).seconds))
 		if len(files): 
 			data["msg"] = str(index)+ "/" + str(total)+ " upload successfully!"
@@ -334,3 +336,4 @@ def download_spec(request,flag):
 		return response
 	else:
 		return redirect('/Users/login/')
+

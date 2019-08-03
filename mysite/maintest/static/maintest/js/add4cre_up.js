@@ -1,3 +1,4 @@
+
 function getFilename(){
 	files=document.getElementById("file").files;
 	var fn="";
@@ -27,7 +28,7 @@ function form_submit4reply(obj) {
 	return false; 
 }
 
-function msg_show(message){
+function msg_show(message,seconds=3){
 	var inner = "<div style=\"margin:0px\" class=\"alert ";
 	var c_button = " alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"> &times; </button>";
 	if(message.type == "s"){
@@ -42,7 +43,7 @@ function msg_show(message){
 	document.getElementById("message").innerHTML = inner + c_button + message.msg + "</div>";
 	window.setTimeout(function(){
 		$('[data-dismiss="alert"]').alert('close');
-	},3000);
+	},seconds*1000);
 	$("html,body").animate({"scrollTop":top});
 	loadTreeview(currentTVPath);
 }
@@ -183,3 +184,4 @@ function before_upload(){
 		}
 	});
 }
+

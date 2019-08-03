@@ -16,5 +16,7 @@ urlpatterns = [
 	url(r'^report/$', views.report, name='report'),
 	url(r'^edit_file/$', views.edit_file, name='edit_file'),
 	url(r'^v2pj/$', views.vcd2picjson, name='vcd2picjson'),
-
+	url(r'^stream_status/',views.status4user_get,name="status4user_get"),
+	url(r'^testProgressQuery/',views.testProgressQuery,name="testProgressQuery"),
 ]
+

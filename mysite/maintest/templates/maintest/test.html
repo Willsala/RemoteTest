@@ -19,7 +19,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'maintest/WaveDrawJS/css/WaveDrawJS.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'maintest/css/maintest.css' %}">
 <script src="{% static 'maintest/WaveDrawJS/script/loadjson.js' %}"></script>
-<!-- <script src="{% static 'maintest/WaveDrawJS/script/miscscript.js' %}"></script> -->
+ <script src="{% static 'maintest/WaveDrawJS/script/miscscript.js' %}"></script> 
 <script>
     // define django template tag variables
     var build_url = "{% url 'maintest:build' %}";
@@ -207,7 +207,7 @@ $(document).ready(function() {
              style="background-color: #dedef8;box-shadow:
                            inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
           <p>stream</p>
-          {% include "maintest/include/stream_status.html" %}
+          <div id="stream_status">{% include "maintest/include/stream_status.html" %}</div>
         </div>
       </div>
     </div>

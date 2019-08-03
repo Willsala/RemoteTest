@@ -1,3 +1,4 @@
+
 from django.conf.urls import url
 
 from . import views
@@ -30,6 +31,7 @@ urlpatterns = [
 	url(r'^email/',info.email,name="email"),
 	url(r'^history/',info.history,name="history"),
 	url(r'^log/',views.log,name="log"),
+	
 	url(r'^test_request/',task_handle.test_request,name="test_request"),
 	
 	#--------------------group-------------------
@@ -70,3 +72,4 @@ urlpatterns = [
 	url(r'^task_list4group/',task_handle.task_list4group,name="record"),
 	
 ]
+
