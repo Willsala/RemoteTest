@@ -13,6 +13,7 @@ import os, json, re
 from .mytools.patternGen import PatternGen
 from .mytools.mytools import VcdFile, vcd_merge
 from .vcd2pic_views import vcd2picjson
+from Users.task_handle import tfo_parser
 
 import time
 

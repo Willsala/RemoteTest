@@ -1,4 +1,4 @@
-from Users.task_hanlde import addIndb
+from task_handle import addIndb
 import multiprocessing
 from random import randint
 
