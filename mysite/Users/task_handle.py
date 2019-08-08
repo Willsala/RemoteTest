@@ -13,6 +13,8 @@ from django.db import transaction
 from django.http import HttpResponse,JsonResponse
 from django.shortcuts import redirect,render
 from maintest.mytools.batch import report
+from maintest.mytools.patternGen import PatternGen
+
 import multiprocessing
 import time,datetime,pytz
 import sys
@@ -364,8 +366,9 @@ def test(task):
 	e_time = time.time()
 	#print(abc)
 
-	#------compare two trf----------
-	#trf_compare(path_o+"_ori",path_o)
+	#------compare two vcds ----------
+	vcd_path = trf2vcd_special(report_file,path_in)
+	trf_compare(vcd_path+"_ori",vcd_path)
 	
 
 	key = "Test time for " + task.ptn_name + ":"
@@ -466,17 +469,30 @@ def check4waitingInfo():
 		wait_sec = sum(merge) * A_task_time
 		return "There are %d users in serving list, and %d users in queue.\n your tasks will get to platform in about %d seconds." % (serving_num,user_in_queue_num,wait_sec)
 		
-# with transaction.atomic():
-	# user4serving.objects.all().delete()
-	# user_in_queue.objects.all().delete()
-	# task_db.objects.all().delete()
-	# Task.objects.all().delete()
-	# user4report.objects.all().delete()
-	# allTask4group.objects.all().delete()
-	# allTask4user.objects.all().delete()
+def trf2vcd_special(report_file,path_in):
+	tfo = os.path.split(report_file.replace("_report.log",".tfo"))
+	file_list_list = tfo_parser(tfo[0],tfo[1])
 	
-# pro_1 = multiprocessing.Process(target = minute_process)
-# pro_1.start()
-# pro_2 = multiprocessing.Process(target = test_pack)
-# pro_2.start()
+	vcd_path = ""
+	
+	
+	for project_path, file_list in file_list_list:
+		if project_path in path_in:
+			temp_path = os.path.join(project_path, 'temp.json')
+			if os.path.isfile(temp_path):
+				s_time = time.time()
+				pattern = PatternGen(project_path, file_list=file_list)
+				trf = pattern.project_name + '.trf'
+				vcd = pattern.project_name + '_trf.vcd'
+				vcd_path = os.path.join(project_path,vcd)
+				pattern.trf2vcd(trf, vcd, flag='bypass')
+				break
+			else:
+				print('temp.json not found. Please build ptn first.')
+		else:
+			raise Exception("project_path not in path_in. Please solve the problem first!")
+		
+	print('trf2vcd succeed!')
+	
+	return vcd_path
 	
