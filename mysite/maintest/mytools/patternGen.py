@@ -14,7 +14,8 @@ from importlib import util
 if util.find_spec("filebrowser"):
 	try:
 		from filebrowser.sites import site
-		DIRECTORY = os.path.join(site.storage.location, "uploads")  # /path/to/mysite/uploads/
+		#DIRECTORY = os.path.join(site.storage.location, "uploads")  # /path/to/mysite/uploads/
+		DIRECTORY = site.storage.location
 	except Exception as exc:
 		print('site not found')
 		DIRECTORY = sys.path[0]
@@ -25,7 +26,7 @@ else:
 # import timeit
 
 PROJECT_PATH = ''  # /mysite/uploads/project/
-INCLUDE_PATH = 'include'  # /mysite/tools/include/
+INCLUDE_PATH = os.path.join('uploads','include')  # /mysite/tools/include/
 
 # define operation code here
 # MASK_OP = 0x1

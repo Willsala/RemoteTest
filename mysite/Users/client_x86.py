@@ -3,7 +3,10 @@
 import socket
 import os
 import hashlib
+
 from .send_recv_zipv import sendFile,recvFile
+#from .send_recv import sendFile,recvFile
+
 
 def client_test(file):
 	#ip = 'localhost'

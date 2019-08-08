@@ -5,6 +5,7 @@ import sys
 import shutil
 import os
 import re
+from itertools import islice
 
 def trf_compare(originFile,newFile):
 	#s_time = time.time()
@@ -28,8 +29,9 @@ def trf_compare(originFile,newFile):
 def md5_calc(file):
 	md5_result = hashlib.md5()
 	with open(file,'rb') as fp:	
-		data = fp.read()
-		md5_result.update(data)
+		for data in islice(fp,3,None):
+		#data = fp.read()
+			md5_result.update(data)
 		fp.close()
 	return md5_result.hexdigest()
 	
@@ -39,5 +41,25 @@ def md5_calc(file):
 #		trf_compare(sys.argv[1],sys.argv[2])
 #	else:
 #		print("Please input two files(with their path)!")
-		
+
+def trf_compare2(originFile,newFile):
+	#s_time = time.time()
+	msg = "same"
+	f_ori = open(originFile,'r')
+	f_new = open(newFile,'r')
+	count = 1
+	with open("diff_info.txt","a") as fp:
+		fp.write(originFile+" vs "+newFile+"\n")
+		fp.close()
+	for ori in f_ori:
+		new = f_new.readline()
+		if count <= 3 :
+			count += 1
+			continue
+		if ori != new:
+			with open("diff_info.txt","a") as fp:
+				fp.write("line number: "+str(count)+" "+ ori+" - "+new+"\n")
+				fp.close()
+		count += 1
+
 
