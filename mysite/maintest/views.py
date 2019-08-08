@@ -16,7 +16,7 @@ from .vcd2pic_views import vcd2picjson
 
 from Users.task_handle import tfo_parser
 import time
-from Users.models import user_in_queue,user4serving,Users
+from Users.models import user_in_queue,user4serving,Users,Task
 
 # patternGen.prepare()
 
@@ -324,8 +324,14 @@ def testProgressQuery(request):
 			sum += item.x
 			done += item.x - item.x_current		
 		if sum == 0:
-			request.session['stream_status'][2][1] = DONE			
-			percent = 100
+			task_set = Task.objects.filter(user=user)
+			if len(task_set) == 1:
+				percent = 99
+			elif len(task_set) == 2:
+				percent = 98
+			else:
+				percent = 100
+				request.session['stream_status'][2][1] = DONE			
 		else:
 			percent = int(done/sum*100)
 		
