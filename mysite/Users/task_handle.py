@@ -22,7 +22,7 @@ import functools
 import bs4
 import random
 
-from .trf_compare import trf_compare
+from .trf_compare import rptCheck
 #from .trf_compare import trf_compare2 as trf_compare
 from .client_x86 import client_test
 
@@ -369,7 +369,7 @@ def test(task):
 
 	#------compare two vcds ----------
 	#vcd_path = trf2vcd_special(task.report_file,path_in)
-	#trf_compare(vcd_path+"_ori",vcd_path)
+	#rptCheck(vcd_path)
 	
 
 	key = "Test time for " + task.ptn_name + ":"
@@ -478,7 +478,7 @@ def trf2vcd_special(report_file,path_in):
 	found = False
 	
 	for project_path, file_list in file_list_list:
-		if project_path in path_in:
+		if project_path+os.sep in path_in:
 			temp_path = os.path.join(project_path, 'temp.json')
 			if os.path.isfile(temp_path):
 				s_time = time.time()
@@ -487,6 +487,13 @@ def trf2vcd_special(report_file,path_in):
 				vcd = pattern.project_name + '_trf.vcd'
 				vcd_path = os.path.join(project_path,vcd)
 				pattern.trf2vcd(trf, vcd, flag='bypass')
+				period1 = pattern.digital_param['period']
+				#print(period1)
+				period2 = '1us'
+				vcd1 = os.path.join(project_path, pattern.file_list['VCD'])
+				vcd2 = os.path.join(project_path, pattern.project_name + '_trf.vcd')
+				vcdm_path = os.path.join(project_path, pattern.project_name + '_merge.vcd')
+				vcd_merge(vcd1, vcd2, period1, period2, vcdm_path, flag='alternate')
 				found = True
 				break
 			else:
@@ -497,4 +504,6 @@ def trf2vcd_special(report_file,path_in):
 	print('trf2vcd succeed!')
 	
 	return vcd_path
-	
+
+
+			

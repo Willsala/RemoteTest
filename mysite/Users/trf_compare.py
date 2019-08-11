@@ -62,4 +62,14 @@ def trf_compare2(originFile,newFile):
 				fp.close()
 		count += 1
 
-
+def rptCheck(vcd_path)
+	with open(os.path.splitext(path)[0] + '.rpt', 'r') as fr, open("robust_test_log.txt","a") as fp:
+		if "Test pass!" in fr.readline():
+			fp.write(os.path.split(vcd_path)[1] + "\ttest pass!\n")
+					
+		else:
+			fp.write(os.path.split(vcd_path)[1] + "\tnot pass!\n")
+			file = vcd_path.replace("_trf.vcd","_merge.vcd")
+			shutil.copy(file,os.path.join('trf_diffs',re.sub(r'[.:\s-]','_',str(datetime.now())) + "_" + file.split(os.sep)[-1]))	
+		fp.close()
+		fr.close()
