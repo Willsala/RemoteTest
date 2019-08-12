@@ -63,7 +63,7 @@ if __name__ == '__main__':
 	user_2_tfo_dict = {1:"BRAMs.tfo",2:"DSPs.tfo",3:"CLBs.tfo"}
 	testrequest_2 = TestRequest("user_2","TestProject",user_2_tfo_dict)
 	
-	pro_1 = multiprocessing.Process(target = AutoRunUserTestRequest, args = (testrequest_1, 18))
+	pro_1 = multiprocessing.Process(target = AutoRunUserTestRequest, args = (testrequest_1, 20))
 	pro_1.start()
 	pro_2 = multiprocessing.Process(target = AutoRunUserTestRequest, args = (testrequest_2, 6))
 	pro_2.start()
