@@ -368,8 +368,8 @@ def test(task):
 	#print(abc)
 
 	#------compare two vcds ----------
-	#vcd_path = trf2vcd_special(task.report_file,path_in)
-	#rptCheck(vcd_path)
+	vcd_path = trf2vcd_special(task.report_file,path_in)
+	rptCheck(vcd_path)
 	
 
 	key = "Test time for " + task.ptn_name + ":"
