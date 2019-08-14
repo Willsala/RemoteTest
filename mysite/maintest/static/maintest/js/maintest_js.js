@@ -182,7 +182,7 @@ function status_get(){
 }
 
 function buildPattern(path){
-  var url = build_url;
+  var url = "/maintest/build/";
   console.log("build func start");
   console.log(url);
   $.ajax({

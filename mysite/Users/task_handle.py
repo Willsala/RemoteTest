@@ -14,6 +14,7 @@ from django.http import HttpResponse,JsonResponse
 from django.shortcuts import redirect,render
 from maintest.mytools.batch import report
 from maintest.mytools.patternGen import PatternGen
+from maintest.mytools.mytools import vcd_merge
 
 import multiprocessing
 import time,datetime,pytz
@@ -368,8 +369,8 @@ def test(task):
 	#print(abc)
 
 	#------compare two vcds ----------
-	vcd_path = trf2vcd_special(task.report_file,path_in)
-	rptCheck(vcd_path)
+	#vcd_path = trf2vcd_special(task.report_file,path_in)
+	#rptCheck(vcd_path)
 	
 
 	key = "Test time for " + task.ptn_name + ":"

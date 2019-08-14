@@ -292,7 +292,7 @@ def index(request):
 			'DIRECTORY': DIRECTORY,
 			'current_path': username,   # directory is Bad URL
 			'file_content': edit_file(file_path),  # file to display in <textarea>
-			'file_path': file_path,  # path of the above
+			'file_path': file_path.replace("\\","/"),  # path of the above
 			'file_name': query_file,
 			# 'wave_path': request.session.get("wave_path",wave_path),  # can't deal with it
 			'obj': json.dumps(obj),  # default treeview object

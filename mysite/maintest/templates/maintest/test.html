@@ -19,7 +19,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'maintest/WaveDrawJS/css/WaveDrawJS.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'maintest/css/maintest.css' %}">
 <script src="{% static 'maintest/WaveDrawJS/script/loadjson.js' %}"></script>
- <script src="{% static 'maintest/WaveDrawJS/script/miscscript.js' %}"></script> 
+<script src="{% static 'maintest/WaveDrawJS/script/miscscript.js' %}"></script>  
 <script>
     // define django template tag variables
     var build_url = "{% url 'maintest:build' %}";
@@ -29,7 +29,6 @@
     var tv_ajax_url = "{% url 'maintest:tv_ajax' %}";
     var vcd2pic_url = "{% url 'maintest:vcd2picjson' %}";
     var uservcdfile = "{{ file_path }}";
-
 
 </script>
 <script>
