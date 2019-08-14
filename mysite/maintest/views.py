@@ -147,9 +147,9 @@ def check(request):
 		ptn_name = iter[1][0]
 		if os.path.isdir(project_loc):
 			dir_list = os.listdir(project_loc)
-			input_ptn = ptn_name + ".ptn"
+			input_ptn = ptn_name + ".rbt"
 			if input_ptn not in dir_list:
-				msg = "no ptn file called " + input_ptn + " in " + project_loc +". Please check tfo file!"
+				msg = "no rbt file called " + input_ptn + " in " + project_loc +". Please check tfo file!"
 				type = "w"
 				request.session['stream_status'][0][1] = UNDONE
 				return JsonResponse({"msg":msg,"type":type})
